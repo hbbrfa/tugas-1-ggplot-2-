@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1.1 Pendahuluan
 
-Tujuan bab ini adalah untuk mengajarkan Anda bagaimana menghasilkan grafik yang berguna dengan ggplot2 secepat mungkin. Anda akan mempelajari dasar-dasar `ggplot()` serta beberapa “resep” berguna untuk membuat plot yang paling penting. `ggplot()` memungkinkan Anda membuat plot yang kompleks hanya dengan beberapa baris kode karena didasarkan pada teori dasar yang kaya, grammar of graphics. Di sini kita akan melewati teori dan fokus pada praktik, dan di bab-bab berikutnya Anda akan belajar bagaimana menggunakan kekuatan ekspresif penuh dari grammar tersebut.
+Tujuan dari bab ini adalah untuk membimbing Anda dalam membuat grafik yang informatif menggunakan ggplot2 dengan cara yang cepat dan efisien. Pada bagian ini, Anda akan mempelajari konsep dasar dari fungsi `ggplot()` serta beberapa “resep” praktis yang dapat digunakan untuk membuat berbagai jenis plot yang paling sering digunakan. Fungsi `ggplot()` memungkinkan Anda membangun visualisasi yang kompleks hanya dengan beberapa baris kode, karena dibangun berdasarkan teori mendasar yang kuat, yaitu grammar of graphics. Dalam bab ini, fokus utama adalah pada penerapan langsung, sementara pembahasan teori akan dijelaskan lebih mendalam pada bab-bab berikutnya agar Anda dapat memahami seluruh kekuatan ekspresif dari grammar tersebut.
 
 Dalam Bab ini anda akan mempelajari:
 
@@ -41,8 +41,8 @@ Dalam Bab ini anda akan mempelajari:
 
 ## 1.2 Data efisiensi bahan bakar
 
-Dalam bab ini, kami akan sebagian besar menggunakan satu set data yang disertakan dengan ggplot2: `mpg.` Set data ini mencakup informasi tentang efisiensi bahan bakar model mobil populer pada tahun 1999 dan 2008, yang dikumpulkan oleh Badan Perlindungan Lingkungan Amerika Serikat, <http://fueleconomy.gov.> Anda dapat mengakses data tersebut dengan memuat ggplot2:
-
+Pada bab ini, kita akan menggunakan sebuah set data yang telah tersedia di dalam paket ggplot2, yaitu `mpg`. Dataset ini berisi informasi mengenai efisiensi bahan bakar dari berbagai model mobil populer pada tahun 1999 dan 2008, yang dikumpulkan oleh Badan Perlindungan Lingkungan Amerika Serikat (EPA) melalui situs <http://fueleconomy.gov>
+. Data tersebut dapat diakses dengan cara memuat paket ggplot2 sebagai berikut:
 
 ```{r}
 library(ggplot2)
@@ -67,9 +67,9 @@ Variabel-variabel tersebut sebagian besar dapat dipahami secara otomatis:
 - `model` adalah model mobil. Ada 38 model, dipilih karena mereka memiliki edisi baru setiap    tahun antara 1999 dan 2008.
 - `kelas` adalah variabel kategorikal yang menggambarkan “jenis” mobil: dua tempat duduk,       SUV, kompak, dll.
 
-Dataset ini mengajukan banyak pertanyaan menarik. Bagaimana hubungan antara ukuran mesin dan efisiensi bahan bakar? Apakah beberapa produsen lebih memperhatikan efisiensi bahan bakar dibanding yang lain? Apakah efisiensi bahan bakar telah meningkat dalam sepuluh tahun terakhir? Kita akan mencoba menjawab beberapa pertanyaan ini, dan dalam prosesnya belajar bagaimana membuat beberapa grafik dasar dengan ggplot2.
+Dataset ini memberikan berbagai pertanyaan menarik untuk dieksplorasi. Misalnya, bagaimana keterkaitan antara kapasitas mesin dan tingkat efisiensi bahan bakar? Apakah terdapat produsen kendaraan tertentu yang lebih fokus pada efisiensi bahan bakar dibanding produsen lainnya? Selain itu, apakah efisiensi bahan bakar mengalami peningkatan dalam kurun waktu sepuluh tahun terakhir? Pada bab ini, kita akan mencoba menjawab beberapa pertanyaan tersebut sekaligus mempelajari cara membuat berbagai jenis grafik dasar menggunakan ggplot2.
 
-## 1.2.1 Latihan
+### 1.2.1 Latihan
 
 1.Daftar lima fungsi yang dapat Anda gunakan untuk mendapatkan informasi lebih lanjut tentang   dataset `mpg.`[eos]
 2.Bagaimana Anda bisa mengetahui dataset lain apa saja yang disertakan dengan ggplot2?
@@ -97,20 +97,20 @@ Ini menghasilkan scatterplot yang didefinisikan oleh:
 
 3.Lapisan: titik-titik.
 
-Perhatikan struktur pemanggilan fungsi ini: data dan pemetaan estetika disediakan di `ggplot()`, kemudian lapisan-lapisan ditambahkan dengan `+`. Ini adalah pola yang penting, dan saat Anda mempelajari lebih banyak tentang ggplot2, Anda akan membuat plot yang semakin canggih dengan menambahkan lebih banyak jenis komponen.
+Perhatikan struktur pemanggilan fungsi berikut: data serta pemetaan estetik ditempatkan di dalam `ggplot()`, kemudian ditambahkan berbagai lapisan menggunakan operator `+`. Pola ini sangat penting untuk dipahami, karena seiring Anda mempelajari ggplot2 lebih lanjut, Anda akan mampu membangun visualisasi yang lebih kompleks dengan menambahkan berbagai jenis komponen secara bertahap.
 
-Hampir setiap plot memetakan sebuah variabel ke sumbu `x` dan `y`, sehingga memberi nama pada estetika ini terasa melelahkan, oleh karena itu dua argumen pertama yang tidak dinamai pada `aes()` akan dipetakan ke `x` dan `y`. Ini berarti bahwa kode berikut identik dengan contoh di atas:
+Dalam sebagian besar plot, biasanya terdapat pemetaan variabel ke sumbu `x` dan `y`. Karena penulisan nama estetika ini secara eksplisit dapat terasa repetitif, ggplot2 mengizinkan dua argumen pertama yang tidak diberi nama di dalam fungsi `aes()` secara otomatis dianggap sebagai `x` dan `y`. Oleh sebab itu, kode berikut memiliki fungsi yang sama dengan contoh sebelumnya:
 
 ```{r}
 ggplot(mpg, aes(displ, hwy)) +
   geom_point()
 ```
 
-Kita akan tetap menggunakan gaya itu sepanjang buku, jadi jangan lupa bahwa dua argumen pertama untuk `aes()` adalah `x` dan `y`. Perhatikan bahwa kita menaruh setiap perintah di baris baru. Kami menyarankan melakukan ini dalam kode Anda sendiri, sehingga mudah untuk memindai spesifikasi plot dan melihat persis apa yang ada di sana. Dalam bab ini, terkadang kita akan menggunakan hanya satu baris per plot, karena ini memudahkan melihat perbedaan antara variasi plot.
+Kita akan terus menggunakan gaya penulisan tersebut sepanjang buku ini, sehingga penting untuk diingat bahwa dua argumen pertama dalam fungsi `aes()` secara otomatis dipetakan sebagai `x` dan `y`. Perhatikan pula bahwa setiap perintah ditempatkan pada baris baru. Praktik ini sangat disarankan saat Anda menulis kode sendiri, karena memudahkan dalam membaca spesifikasi plot dan memahami struktur komponen secara jelas. Namun, dalam bab ini, terkadang kita akan menggunakan satu baris per plot untuk memudahkan melihat variasi antar grafik dengan cepat.
 
-Grafik tersebut menunjukkan korelasi yang kuat: seiring dengan bertambahnya ukuran mesin, efisiensi bahan bakar menjadi lebih buruk. Ada juga beberapa pencilan yang menarik: beberapa mobil dengan mesin besar memiliki efisiensi bahan bakar yang lebih tinggi dari rata-rata. Menurutmu, mobil jenis apa kiranya mereka?
+Grafik yang dihasilkan menunjukkan hubungan yang cukup kuat: semakin besar ukuran mesin kendaraan, semakin rendah efisiensi bahan bakarnya. Terdapat pula beberapa titik yang tampak sebagai pencilan menarik, yaitu mobil dengan mesin berkapasitas besar tetapi menunjukkan efisiensi bahan bakar di atas rata-rata. Menurut Anda, kira-kira jenis kendaraan apa yang termasuk dalam kategori tersebut?
 
-## 1.3.1
+### 1.3.1
 
 1.Bagaimana Anda menggambarkan hubungan antara cty dan hwy? Apakah Anda memiliki              kekhawatiran tentang menarik kesimpulan dari plot tersebut?
 
@@ -128,13 +128,13 @@ Grafik tersebut menunjukkan korelasi yang kuat: seiring dengan bertambahnya ukur
 
 ## 1.4 Warna, ukuran, bentuk, dan atribut estetika lainnya
 
-Untuk menambahkan variabel tambahan ke dalam plot, kita dapat menggunakan estetika lain seperti warna, bentuk, dan ukuran (Catatan: meskipun kita menggunakan ejaan British sepanjang buku ini, ggplot2 juga menerima ejaan American). Ini bekerja dengan cara yang sama seperti estetika `x` dan `y`, dan ditambahkan ke dalam panggilan ke `aes()`:
+Untuk memasukkan variabel tambahan ke dalam plot, kita dapat memanfaatkan estetika lain seperti warna, bentuk, dan ukuran. (Catatan: meskipun dalam buku ini digunakan ejaan British, ggplot2 juga mendukung ejaan American). Estetika tersebut berfungsi dengan cara yang sama seperti `x` dan `y`, dan ditambahkan di dalam pemanggilan fungsi `aes()` sebagai berikut:
   
 - `aes(displ, hwy, colour = class)`
 - `aes(displ, hwy, shape = drv)`
 - `aes(displ, hwy, size = cyl)`
 
-ggplot2 menangani rincian dalam mengubah data (misalnya, ‘f’, ‘r’, ‘4’) menjadi estetika (misalnya, ‘merah’, ‘kuning’, ‘hijau’) dengan sebuah **skala**. Ada satu skala untuk setiap pemetaan estetika dalam sebuah plot. Skala juga bertanggung jawab untuk membuat panduan, seperti sumbu atau legenda, yang memungkinkan Anda membaca plot, mengubah nilai estetika kembali menjadi nilai data. Untuk saat ini, kita akan menggunakan skala default yang disediakan oleh ggplot2.
+ggplot2 secara otomatis mengelola proses mengonversi nilai data (misalnya ‘f’, ‘r’, ‘4’) menjadi representasi estetika (seperti ‘merah’, ‘kuning’, atau ‘hijau’) melalui sebuah **skala**. Setiap pemetaan estetika dalam plot memiliki skala tersendiri. Skala ini juga berperan dalam menghasilkan panduan visual seperti sumbu dan legenda, yang membantu pembaca memahami grafik dengan menghubungkan kembali nilai estetika ke nilai data yang sebenarnya. Untuk saat ini, kita akan menggunakan skala bawaan yang telah disediakan oleh ggplot2.
 
 Untuk mempelajari lebih lanjut tentang variabel luar tersebut dalam scatterplot sebelumnya, kita dapat memetakan variabel kelas ke warna:
 
@@ -144,7 +144,7 @@ ggplot(mpg, aes(displ, hwy, colour = class)) +
 ```
 
 
-Ini memberikan setiap titik warna unik yang sesuai dengan kelasnya. Legenda memungkinkan kita membaca nilai data dari warnanya, menunjukkan bahwa kelompok mobil dengan konsumsi bahan bakar yang sangat tinggi untuk ukuran mesinnya adalah mobil dua tempat duduk: mobil dengan mesin besar, tetapi bodi ringan.
+Pemetaan ini memberikan warna yang berbeda untuk setiap titik berdasarkan kelas kendaraan yang diwakilinya. Legenda yang ditampilkan membantu kita menginterpretasikan data melalui warna tersebut, dan menunjukkan bahwa kelompok mobil dengan efisiensi bahan bakar sangat tinggi dibanding ukuran mesinnya adalah mobil berjenis dua tempat duduk: kendaraan dengan kapasitas mesin besar namun memiliki bodi yang ringan.
 
 Jika Anda ingin menetapkan suatu estetika ke nilai tetap, tanpa mengubah skalanya, lakukan itu di lapisan individual di luar `aes()`. Bandingkan dua plot berikut:
 
@@ -153,13 +153,13 @@ ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = "blue"))
 ggplot(mpg, aes(displ, hwy)) + geom_point(colour = "blue")
 ```
 
-Dalam grafik pertama, nilai “biru” diubah skalanya menjadi warna agak merah muda, dan sebuah legenda ditambahkan. Dalam grafik kedua, titik-titik diberi warna biru R.Lihat `vignette("ggplot2-specs")` untuk nilai yang dibutuhkan untuk colour dan estetika lainnya.
+Pada grafik pertama, nilai “biru” diterjemahkan oleh skala menjadi warna yang sedikit merah muda, dan sebuah legenda ditampilkan secara otomatis. Sementara pada grafik kedua, titik-titik secara eksplisit diberi warna biru menggunakan sistem pewarnaan R. Untuk mengetahui nilai yang dapat digunakan pada estetika colour dan estetika lainnya, Anda dapat melihat dokumentasi melalui perintah `vignette("ggplot2-specs")`.
 
-Berbagai jenis atribut estetika bekerja lebih baik dengan jenis variabel yang berbeda. Misalnya, warna dan bentuk bekerja dengan baik pada variabel kategori, sementara ukuran bekerja dengan baik untuk variabel kontinu. Jumlah data juga memengaruhi: jika data sangat banyak, bisa sulit untuk membedakan kelompok yang berbeda. Solusi alternatif adalah menggunakan faceting, seperti yang dijelaskan selanjutnya.
+Setiap jenis atribut estetika memiliki kesesuaian yang berbeda dengan tipe variabel tertentu. Sebagai contoh, warna dan bentuk lebih efektif digunakan untuk variabel kategori, sedangkan ukuran lebih sesuai untuk variabel kontinu. Selain itu, jumlah data juga berpengaruh—dataset yang terlalu besar bisa menyulitkan dalam membedakan setiap kelompok. Salah satu solusi yang dapat digunakan untuk mengatasi hal tersebut adalah teknik faceting, yang akan dijelaskan pada bagian berikutnya.
 
-Saat menggunakan estetika dalam sebuah grafik, biasanya lebih sedikit justru lebih baik. Sulit untuk melihat hubungan simultan antara warna, bentuk, dan ukuran, jadi bertindaklah dengan bijak saat menggunakan estetika. Alih-alih mencoba membuat satu grafik yang sangat kompleks yang menampilkan semuanya sekaligus, coba buat serangkaian grafik sederhana yang menceritakan sebuah cerita, membimbing pembaca dari ketidaktahuan menuju pengetahuan.
+Dalam penggunaan estetika pada grafik, prinsip “lebih sedikit lebih baik” sering kali berlaku. Terlalu banyak estetika seperti warna, bentuk, dan ukuran yang digunakan secara bersamaan dapat menyulitkan pembaca dalam memahami hubungan antar variabel. Oleh karena itu, gunakan estetika secara bijak. Alih-alih membuat satu grafik yang sangat kompleks untuk menampilkan semua informasi sekaligus, akan lebih efektif jika Anda membuat beberapa grafik sederhana yang disusun untuk menceritakan suatu alur pemahaman, mengarahkan pembaca dari tidak mengetahui menjadi memahami.
 
-## 1.4.1 Latihan
+### 1.4.1 Latihan
 
 1.Bermain-mainlah dengan estetika warna, bentuk, dan ukuran. Apa yang terjadi ketika Anda memetakannya ke nilai kontinu? Bagaimana dengan nilai kategorikal? Apa yang terjadi ketika Anda menggunakan lebih dari satu estetika dalam sebuah grafik?
 
@@ -169,9 +169,9 @@ Saat menggunakan estetika dalam sebuah grafik, biasanya lebih sedikit justru leb
 
 ## 1.5 Pembuatan Faset
 
-Teknik lain untuk menampilkan variabel kategorikal tambahan pada plot adalah faceting. Faceting membuat tabel grafik dengan membagi data menjadi beberapa subset dan menampilkan grafik yang sama untuk setiap subset.    
+Salah satu teknik lain yang dapat digunakan untuk menampilkan variabel kategorikal tambahan dalam sebuah plot adalah faceting. Teknik ini menyusun serangkaian grafik dalam bentuk tabel dengan cara membagi data menjadi beberapa subset, kemudian menampilkan plot yang sama untuk setiap subset sehingga pola dan perbedaan antar kelompok dapat diamati dengan lebih jelas.
 
-Ada dua jenis faceting: grid dan wrapped. Wrapped adalah yang paling berguna, jadi kita akan membahasnya di sini, dan Anda bisa mempelajari tentang grid faceting nanti. Untuk melakukan faceting pada plot, Anda cukup menambahkan spesifikasi faceting dengan `facet_wrap()`, yang mengambil nama variabel yang diawali dengan `~`.
+Terdapat dua tipe faceting, yaitu grid dan wrapped. Di antara keduanya, faceting tipe wrapped merupakan yang paling sering digunakan, sehingga pembahasan akan difokuskan pada jenis ini terlebih dahulu. Untuk menerapkan faceting pada grafik, Anda dapat menambahkan fungsi `facet_wrap()`, yang menerima nama variabel dengan diawali tanda `~`.
 
 
 ```{r}
@@ -208,7 +208,7 @@ ggplot(mpg, aes(displ, hwy)) +
 #> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```
 
-Ini melapisi diagram sebar dengan kurva halus, termasuk penilaian ketidakpastian dalam bentuk interval keyakinan per poin yang ditampilkan dalam warna abu-abu. Jika Anda tidak tertarik dengan interval keyakinan, nonaktifkan dengan `geom_smooth(se = FALSE)`.
+Fungsi ini menambahkan lapisan grafik berupa kurva halus di atas diagram sebar, beserta estimasi tingkat ketidakpastian yang ditampilkan melalui interval kepercayaan pada setiap titik menggunakan warna abu-abu. Jika Anda tidak ingin menampilkan interval keyakinan tersebut, Anda dapat menonaktifkannya dengan menggunakan `geom_smooth(se = FALSE)`.
 
 Argumen penting untuk `geom_smooth()` adalah `method`, yang memungkinkan Anda memilih jenis model mana yang digunakan untuk menyesuaikan kurva halus:
 
@@ -246,7 +246,7 @@ ggplot(mpg, aes(displ, hwy)) +
 #> `geom_smooth()` using formula = 'y ~ x'
 ```
 
--   `method = "rlm"` Berfungsi seperti `lm()`, tetapi menggunakan algoritma pemasangan yang robust sehingga outlier tidak terlalu memengaruhi hasil pemasangan. Ini adalah bagian dari paket **MASS** , jadi ingatlah untuk memuatnya terlebih dahulu.
+-   Argumen `method = "rlm"` bekerja serupa dengan `lm()`, tetapi menggunakan algoritma pemodelan robust yang dirancang untuk meminimalkan pengaruh pencilan (outlier) terhadap hasil pemodelan. Fungsi ini berasal dari paket **MASS**, sehingga Anda perlu memastikan paket tersebut telah dimuat sebelum menggunakannya.
 
 ### 1.6.2 Boxplot dan Titik-Titik Yang Bergetar
 
@@ -267,13 +267,13 @@ ggplot(mpg, aes(drv, hwy)) + geom_boxplot()
 ggplot(mpg, aes(drv, hwy)) + geom_violin()
 ```
 
-Setiap metode memiliki kelebihan dan kekurangannya masing-masing. Boxplot merangkum sebagian besar distribusi hanya dengan lima angka, sementara jittered plot menunjukkan setiap titik tetapi hanya berfungsi dengan kumpulan data yang relatif kecil. Violin plot memberikan tampilan yang paling kaya, tetapi bergantung pada perhitungan estimasi kepadatan, yang mungkin sulit diinterpretasikan.
+Setiap metode visualisasi memiliki keunggulan dan keterbatasannya masing-masing. Boxplot mampu merangkum sebagian besar distribusi data hanya dengan lima nilai statistik utama. Jittered plot menampilkan seluruh titik data secara individual, namun hanya efektif digunakan untuk dataset yang jumlahnya tidak terlalu besar. Sementara itu, violin plot menawarkan visualisasi yang lebih informatif dan mendetail, tetapi mengandalkan estimasi kepadatan data yang mungkin memerlukan interpretasi lebih mendalam.
 
 Untuk titik-titik yang bergetar, `geom_jitter()` menawarkan kontrol estetika yang sama seperti `geom_point()`: `size`, `colour`, dan `shape`. Untuk `geom_boxplot()`dan `geom_violin()`, Anda dapat mengontrol garis luar `colour` atau warna internal `fill`.
 
 ### 1.6.3 Histogram dan Poligon Frekuensi
 
-Histogram dan poligon frekuensi menunjukkan distribusi satu variabel numerik. Histogram dan poligon frekuensi memberikan informasi lebih banyak tentang distribusi satu kelompok dibandingkan diagram kotak, dengan mengorbankan kebutuhan ruang yang lebih besar.
+Histogram dan poligon frekuensi digunakan untuk menggambarkan distribusi dari satu variabel numerik. Kedua jenis grafik ini mampu menampilkan informasi yang lebih mendalam tentang distribusi suatu kelompok data dibandingkan boxplot, meskipun membutuhkan ruang visual yang lebih besar untuk ditampilkan secara efektif.
 
 ```{r}
 ggplot(mpg, aes(hwy)) + geom_histogram()
@@ -282,9 +282,9 @@ ggplot(mpg, aes(hwy)) + geom_freqpoly()
 #> `stat_bin()` using `bins = 30`. Pick better value `binwidth`.
 ```
 
-Histogram dan poligon frekuensi bekerja dengan cara yang sama: keduanya mengelompokkan data, lalu menghitung jumlah observasi dalam setiap pengelompokkan. Satu-satunya perbedaan adalah tampilannya: histogram menggunakan batang, sedangkan poligon frekuensi menggunakan garis.
+Histogram dan poligon frekuensi memiliki cara kerja yang serupa, yaitu dengan membagi data ke dalam beberapa kelompok (bins), kemudian menghitung jumlah observasi dalam setiap kelompok tersebut. Perbedaan keduanya terletak pada bentuk visualnya: histogram ditampilkan menggunakan batang, sementara poligon frekuensi digambarkan menggunakan garis yang menghubungkan titik frekuensi.
 
-Anda dapat mengontrol lebar bin dengan `binwidt` hargumen (jika Anda tidak ingin bin dengan jarak yang sama, Anda dapat menggunakan `breaks` argumen). Sangat **penting** untuk bereksperimen dengan lebar bin. Pengaturan default hanya membagi data Anda menjadi 30 bin, yang kemungkinan besar bukan pilihan terbaik. Anda sebaiknya selalu mencoba berbagai lebar bin, dan Anda mungkin perlu beberapa lebar bin untuk mendapatkan gambaran lengkap tentang data Anda.
+Anda dapat mengatur lebar bin menggunakan argumen `binwidth`. Jika Anda memerlukan jarak antar bin yang tidak seragam, Anda bisa menggunakan argumen `breaks`. Sangat penting untuk mencoba berbagai ukuran bin, karena pengaturan default yang membagi data menjadi 30 bin mungkin bukan representasi terbaik. Mencoba beberapa variasi lebar bin akan membantu Anda memperoleh pemahaman yang lebih menyeluruh mengenai struktur distribusi data.
 
 ```{r}
 ggplot(mpg, aes(hwy)) + 
@@ -293,9 +293,9 @@ ggplot(mpg, aes(hwy)) +
   geom_freqpoly(binwidth = 1)
 ```
 
-Alternatif untuk poligon frekuensi adalah plot kepadatan. `geom_density()` Kehati-hatian diperlukan jika Anda menggunakan plot kepadatan: dibandingkan dengan poligon frekuensi, plot kepadatan lebih sulit diinterpretasikan karena perhitungan yang mendasarinya lebih kompleks. Plot kepadatan juga menggunakan asumsi yang tidak berlaku untuk semua data, yaitu bahwa distribusi yang mendasarinya kontinu, tak terbatas, dan halus.
+Alternatif lain dari poligon frekuensi adalah density plot, yang dapat dibuat menggunakan `geom_density()`. Namun, penggunaan plot kepadatan perlu dilakukan dengan hati-hati karena interpretasinya lebih kompleks dibandingkan poligon frekuensi. Hal ini disebabkan oleh perhitungan estimasi kepadatan yang mendasarinya, serta asumsi yang digunakan, seperti distribusi data yang bersifat kontinu, tidak terbatas, dan halus—yang tidak selalu sesuai untuk semua jenis data.
 
-Untuk membandingkan distribusi berbagai subgrup, Anda dapat memetakan variabel kategoris ke isian (untuk `geom_histogram()`) atau warna (untuk `geom_freqpoly()`). Membandingkan distribusi menggunakan poligon frekuensi lebih mudah karena tugas persepsi yang mendasarinya lebih mudah.Anda juga dapat menggunakan faceting: ini membuat perbandingan sedikit lebih sulit, tetapi lebih mudah untuk melihat distribusi setiap grup.
+Untuk membandingkan distribusi dari beberapa subkelompok, Anda dapat memetakan variabel kategoris ke dalam isian (fill) pada `geom_histogram()` atau menggunakan warna pada `geom_freqpoly()`. Poligon frekuensi sering kali lebih mudah dibandingkan histogram dalam hal persepsi visual saat membandingkan distribusi. Selain itu, Anda juga dapat menggunakan teknik faceting; meskipun membandingkan antar kelompok menjadi sedikit lebih menantang, teknik ini mempermudah pengamatan distribusi masing-masing grup secara individu.
 
 ```{r}
 ggplot(mpg, aes(displ, colour = drv)) + 
@@ -316,7 +316,7 @@ ggplot(mpg, aes(manufacturer)) +
   geom_bar()
 ```
 
-Diagram batang bisa membingungkan karena terdapat dua plot yang agak berbeda, yang keduanya biasa disebut diagram batang. Bentuk di atas mengharuskan Anda memiliki data yang belum diringkas, dan setiap observasi berkontribusi satu unit pada tinggi setiap batang. Bentuk diagram batang yang lain digunakan untuk data yang telah diringkas sebelumnya. Misalnya, Anda mungkin memiliki tiga obat dengan efek rata-ratanya:
+Diagram batang dapat menimbulkan kebingungan karena istilah ini digunakan untuk merujuk pada dua jenis plot yang berbeda, meskipun keduanya sama-sama disebut diagram batang. Jenis pertama mengharuskan data dalam bentuk mentah atau belum diringkas, di mana setiap observasi individu menyumbang satu unit pada tinggi batang. Jenis kedua digunakan untuk data yang sudah diringkas terlebih dahulu sebelum divisualisasikan. Misalnya, Anda mungkin memiliki tiga obat dengan efek rata-ratanya:
 
 ```{r}
 drugs <- data.frame(
@@ -334,9 +334,13 @@ ggplot(drugs, aes(drug, effect)) + geom_point()
 
 ### 1.6.5 Deret Waktu Dengan PLot Garis dan Jalur
 
-Plot garis dan jalur biasanya digunakan untuk data deret waktu. Plot garis menghubungkan titik-titik dari kiri ke kanan, sementara plot jalur menghubungkannya sesuai urutan kemunculannya dalam set data (dengan kata lain, plot garis adalah plot jalur data yang diurutkan berdasarkan nilai x). Plot garis biasanya memiliki waktu pada sumbu x, yang menunjukkan bagaimana satu variabel tunggal berubah seiring waktu. Plot jalur menunjukkan bagaimana dua variabel berubah secara bersamaan seiring waktu, dengan waktu dikodekan dalam cara pengamatan dihubungkan.
+Plot garis dan plot jalur umumnya digunakan untuk menganalisis data deret waktu. Plot garis menghubungkan titik data dari kiri ke kanan berdasarkan urutan nilai pada sumbu x, sedangkan plot jalur menghubungkan titik sesuai dengan urutan kemunculannya di dalam dataset. Dengan kata lain, plot garis dapat dianggap sebagai plot jalur yang datanya telah diurutkan berdasarkan nilai x.
 
-Karena variabel tahun dalam `mpg` kumpulan data hanya memiliki dua nilai, kami akan menampilkan beberapa plot deret waktu menggunakan `economics` kumpulan data tersebut, yang berisi data ekonomi AS yang diukur selama 40 tahun terakhir. Gambar di bawah ini menunjukkan dua plot pengangguran dari waktu ke waktu, keduanya dihasilkan menggunakan `geom_line()`. Plot pertama menunjukkan tingkat pengangguran, sementara plot kedua menunjukkan median jumlah minggu pengangguran. Kita sudah dapat melihat beberapa perbedaan pada kedua variabel ini, terutama pada puncak terakhir, di mana persentase pengangguran lebih rendah daripada puncak sebelumnya, tetapi durasi penganggurannya tinggi.
+Pada plot garis, sumbu x biasanya merepresentasikan waktu untuk menunjukkan bagaimana satu variabel berubah dari waktu ke waktu. Sebaliknya, plot jalur menggambarkan perubahan dua variabel secara simultan seiring waktu, dengan urutan waktu direpresentasikan melalui urutan koneksi antar titik.
+
+Karena variabel tahun pada dataset`mpg` hanya memiliki dua nilai, kita akan menggunakan dataset `economics` untuk menampilkan beberapa contoh plot deret waktu. Dataset tersebut berisi data ekonomi Amerika Serikat yang dikumpulkan selama 40 tahun terakhir. Gambar berikut menyajikan dua plot tingkat pengangguran dari waktu ke waktu, keduanya dibuat menggunakan `geom_line()`. Plot pertama menggambarkan persentase tingkat pengangguran, sedangkan plot kedua menunjukkan median durasi pengangguran dalam minggu.
+
+Dari kedua plot tersebut, kita dapat mengamati beberapa perbedaan penting, terutama pada puncak terakhir. Meskipun tingkat pengangguran lebih rendah dibandingkan puncak sebelumnya, durasi pengangguran justru lebih panjang, menunjukkan pergeseran dinamika dalam pasar tenaga kerja.
 
 ```{r}
 ggplot(economics, aes(date, unemploy / pop)) +
@@ -345,9 +349,9 @@ ggplot(economics, aes(date, uempmed)) +
   geom_line()
 ```
 
-Untuk memeriksa hubungan ini secara lebih rinci, kami ingin menggambar kedua deret waktu pada plot yang sama. Kami dapat menggambar diagram sebar tingkat pengangguran vs. lama pengangguran, tetapi dengan begitu kami tidak dapat lagi melihat perkembangannya seiring waktu. Solusinya adalah menghubungkan titik-titik yang berdekatan dalam waktu dengan segmen garis, membentuk plot *jalur* .
+Untuk menganalisis hubungan kedua variabel secara lebih mendalam, kita perlu menampilkan kedua deret waktu dalam satu plot. Salah satu opsi adalah membuat diagram sebar antara tingkat pengangguran dan durasi pengangguran; namun, cara ini menghilangkan informasi tentang urutan waktu. Oleh karena itu, solusi yang tepat adalah menghubungkan titik-titik yang berurutan berdasarkan waktu menggunakan segmen garis, membentuk apa yang disebut plot *jalur*.
 
-Di bawah ini, kami memplot tingkat pengangguran vs. lama pengangguran dan menghubungkan masing-masing observasi dengan sebuah jalur. Karena banyaknya garis yang bersilangan, arah aliran waktu tidak mudah terlihat pada plot pertama. Pada plot kedua, kami mewarnai titik-titik agar lebih mudah melihat arah waktu.
+Pada contoh berikut, kita memvisualisasikan tingkat pengangguran terhadap lama pengangguran dan menghubungkan setiap titik data dengan jalur berdasarkan urutan waktu. Pada plot pertama, banyaknya garis yang berpotongan menyebabkan arah waktu sulit dipahami. Oleh karena itu, pada plot kedua, titik-titik diberi warna untuk mempermudah pembaca mengikuti alur waktu secara visual.
 
 ```{r}
 ggplot(economics, aes(unemploy / pop, uempmed)) + 
@@ -360,9 +364,9 @@ ggplot(economics, aes(unemploy / pop, uempmed)) +
   geom_point(aes(colour = year(date)))
 ```
 
-Kita dapat melihat bahwa tingkat pengangguran dan lamanya pengangguran sangat berkorelasi, tetapi dalam beberapa tahun terakhir, lamanya pengangguran telah meningkat relatif terhadap tingkat pengangguran.
+Dari visualisasi tersebut, terlihat bahwa terdapat korelasi yang kuat antara tingkat pengangguran dan durasi pengangguran. Namun, dalam beberapa tahun terakhir, durasi pengangguran cenderung meningkat lebih signifikan dibandingkan tingkat pengangguran itu sendiri, menunjukkan adanya perubahan pola dalam dinamika ketenagakerjaan.
 
-Dengan data longitudinal, Anda sering kali ingin menampilkan beberapa deret waktu pada setiap plot, dengan setiap deret mewakili satu individu. Untuk melakukannya, Anda perlu memetakan estetika groupke variabel yang mengodekan keanggotaan grup setiap observasi.
+Dalam analisis data longitudinal, sering kali Anda ingin menampilkan beberapa deret waktu dalam satu plot, di mana masing-masing deret merepresentasikan individu atau kelompok tertentu. Untuk mencapai hal tersebut, Anda perlu memetakan estetika `group` ke variabel yang mengidentifikasi keanggotaan setiap observasi dalam kelompoknya.
 
 ### 1.6.6 Latihan
 
@@ -410,7 +414,9 @@ ggplot(mpg, aes(drv, hwy)) +
   ylim(NA, 30)
 ```
 
-Mengubah batas sumbu akan menetapkan nilai di luar rentang ke `NA`. Anda dapat menonaktifkan peringatan terkait dengan `na.rm = TRUE`, tetapi berhati-hatilah. Jika plot Anda menghitung statistik ringkasan (misalnya, rata-rata sampel), konversi ke ini `NA` terjadi *sebelum* statistik ringkasan dihitung, dan dapat menyebabkan hasil yang tidak diinginkan dalam beberapa situasi.
+Jika kamu mengatur batas sumbu (misalnya `ylim` atau `xlim`) dalam plot, maka data yang berada di luar batas tersebut akan otomatis diubah menjadi `NA` (artinya dianggap tidak ada atau hilang).
+
+Untuk menghilangkan peringatan ini, kamu bisa menggunakan argumen `na.rm = TRUE` agar nilai `NA` dihapus secara diam-diam saat proses plotting.
 
 ## 1.8 Keluaran
 
