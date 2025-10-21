@@ -1,0 +1,455 @@
+---
+title: "Tugas 1 visual"
+author: "Habib Rafa Ardhitya, A320240013"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: flatly
+    higlight: zenburn
+    toc: true
+    toc_float:
+      collapsed: true
+    df_print: paged
+---
+
+```{=html}
+<style>
+body{
+text-align: justify}
+</style>
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Langkah Pertama
+
+
+## 1.1 Pendahuluan
+
+Tujuan bab ini adalah untuk mengajarkan Anda bagaimana menghasilkan grafik yang berguna dengan ggplot2 secepat mungkin. Anda akan mempelajari dasar-dasar `ggplot()` serta beberapa “resep” berguna untuk membuat plot yang paling penting. `ggplot()` memungkinkan Anda membuat plot yang kompleks hanya dengan beberapa baris kode karena didasarkan pada teori dasar yang kaya, grammar of graphics. Di sini kita akan melewati teori dan fokus pada praktik, dan di bab-bab berikutnya Anda akan belajar bagaimana menggunakan kekuatan ekspresif penuh dari grammar tersebut.
+
+Dalam Bab ini anda akan mempelajari:
+
+- Tentang `mpg` Dataset yang disertakan dengan ggplot2,
+- Tiga komponen utama dari setiap plot: data, estetika, dan geom.
+- Bagaimana menambahkan variabel tambahan ke plot dengan estetika,
+- Bagaimana menampilkan variabel kategorikal tambahan dalam sebuah plot menggunakan small      multiples yang dibuat dengan faceting,
+- Berbagai macam geoms yang dapat Anda gunakan untuk membuat berbagai jenis grafik,
+- Bagaimana cara memodifikasi sumbu,
+- Hal-hal yang dapat Anda lakukan dengan objek plot selain menampilkannya, seperti             menyimpannya ke disk,
+
+## 1.2 Data efisiensi bahan bakar
+
+Dalam bab ini, kami akan sebagian besar menggunakan satu set data yang disertakan dengan ggplot2: `mpg.` Set data ini mencakup informasi tentang efisiensi bahan bakar model mobil populer pada tahun 1999 dan 2008, yang dikumpulkan oleh Badan Perlindungan Lingkungan Amerika Serikat, <http://fueleconomy.gov.> Anda dapat mengakses data tersebut dengan memuat ggplot2:
+
+
+```{r}
+library(ggplot2)
+mpg
+#> # A tibble: 234 × 11
+#>   manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class 
+#>   <chr>        <chr> <dbl> <int> <int> <chr>      <chr> <int> <int> <chr> <chr> 
+#> 1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…
+#> 2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…
+#> 3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…
+#> 4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…
+#> 5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…
+#> 6 audi         a4      2.8  1999     6 manual(m5) f        18    26 p     compa…
+#> # ℹ 228 more rows
+```
+
+Variabel-variabel tersebut sebagian besar dapat dipahami secara otomatis:
+
+- `cty` dan `hwy` mencatat mil per galon (mpg) untuk mengemudi di kota dan jalan raya.
+- `displ` adalah kapasitas mesin dalam liter.
+- `drv` adalah sistem penggerak: roda depan (f), roda belakang (r), atau empat roda (4).
+- `model` adalah model mobil. Ada 38 model, dipilih karena mereka memiliki edisi baru setiap    tahun antara 1999 dan 2008.
+- `kelas` adalah variabel kategorikal yang menggambarkan “jenis” mobil: dua tempat duduk,       SUV, kompak, dll.
+
+Dataset ini mengajukan banyak pertanyaan menarik. Bagaimana hubungan antara ukuran mesin dan efisiensi bahan bakar? Apakah beberapa produsen lebih memperhatikan efisiensi bahan bakar dibanding yang lain? Apakah efisiensi bahan bakar telah meningkat dalam sepuluh tahun terakhir? Kita akan mencoba menjawab beberapa pertanyaan ini, dan dalam prosesnya belajar bagaimana membuat beberapa grafik dasar dengan ggplot2.
+
+## 1.2.1 Latihan
+
+1.Daftar lima fungsi yang dapat Anda gunakan untuk mendapatkan informasi lebih lanjut tentang   dataset `mpg.`[eos]
+2.Bagaimana Anda bisa mengetahui dataset lain apa saja yang disertakan dengan ggplot2?
+3.Selain di AS, sebagian besar negara menggunakan konsumsi bahan bakar (bahan bakar yang       digunakan untuk jarak tertentu) daripada efisiensi bahan bakar (jarak yang ditempuh dengan   jumlah bahan bakar tertentu). Bagaimana Anda bisa mengubah `cty` dan `hwy` menjadi standar   Eropa dalam l/100km?
+4.Produsen mana yang memiliki model terbanyak dalam dataset ini? Model mana yang memiliki     variasi terbanyak? Apakah jawaban Anda berubah jika Anda menghapus spesifikasi drive train   yang berulang (misalnya “pathfinder 4wd”, “a4 quattro”) dari nama model?
+
+## 1.3 Komponen utama
+
+Setiap plot ggplot2 memiliki tiga komponen utama:
+1.data,
+2.Sekumpulan pemetaan estetika antara variabel dalam data dan properti visual, 
+3.danSetidaknya satu lapisan yang menjelaskan bagaimana merender setiap observasi. Lapisan     biasanya dibuat dengan fungsi geom.
+
+Berikut adalah contoh sederhana:
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+```
+
+Ini menghasilkan scatterplot yang didefinisikan oleh:
+
+1.Data: `mpg.`
+
+2.Pemetaan estetika: ukuran mesin dipetakan ke posisi x, efisiensi bahan bakar ke posisi y.
+
+3.Lapisan: titik-titik.
+
+Perhatikan struktur pemanggilan fungsi ini: data dan pemetaan estetika disediakan di `ggplot()`, kemudian lapisan-lapisan ditambahkan dengan `+`. Ini adalah pola yang penting, dan saat Anda mempelajari lebih banyak tentang ggplot2, Anda akan membuat plot yang semakin canggih dengan menambahkan lebih banyak jenis komponen.
+
+Hampir setiap plot memetakan sebuah variabel ke sumbu `x` dan `y`, sehingga memberi nama pada estetika ini terasa melelahkan, oleh karena itu dua argumen pertama yang tidak dinamai pada `aes()` akan dipetakan ke `x` dan `y`. Ini berarti bahwa kode berikut identik dengan contoh di atas:
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point()
+```
+
+Kita akan tetap menggunakan gaya itu sepanjang buku, jadi jangan lupa bahwa dua argumen pertama untuk `aes()` adalah `x` dan `y`. Perhatikan bahwa kita menaruh setiap perintah di baris baru. Kami menyarankan melakukan ini dalam kode Anda sendiri, sehingga mudah untuk memindai spesifikasi plot dan melihat persis apa yang ada di sana. Dalam bab ini, terkadang kita akan menggunakan hanya satu baris per plot, karena ini memudahkan melihat perbedaan antara variasi plot.
+
+Grafik tersebut menunjukkan korelasi yang kuat: seiring dengan bertambahnya ukuran mesin, efisiensi bahan bakar menjadi lebih buruk. Ada juga beberapa pencilan yang menarik: beberapa mobil dengan mesin besar memiliki efisiensi bahan bakar yang lebih tinggi dari rata-rata. Menurutmu, mobil jenis apa kiranya mereka?
+
+## 1.3.1
+
+1.Bagaimana Anda menggambarkan hubungan antara cty dan hwy? Apakah Anda memiliki              kekhawatiran tentang menarik kesimpulan dari plot tersebut?
+
+2.Apa yang ditampilkan oleh `ggplot(mpg, aes(model, manufacturer)) + geom_point()`? Apakah    itu berguna? Bagaimana Anda bisa memodifikasi data agar lebih informatif?
+
+3.Jelaskan data, pemetaan estetika, dan lapisan yang digunakan untuk masing-masing plot       berikut. Anda perlu menebak sedikit karena Anda belum melihat semua dataset dan fungsi,     tetapi gunakan akal sehat Anda! Lihat apakah Anda bisa memprediksi bagaimana tampilan plot   sebelum menjalankan kodenya:
+
+1.`ggplot(mpg, aes(cty, hwy)) + geom_point()`
+
+2.`ggplot(diamonds, aes(carat, price)) + geom_point()`
+
+3.`ggplot(economics, aes(date, unemploy)) + geom_line()`
+
+4.`ggplot(mpg, aes(cty)) + geom_histogram()`
+
+## 1.4 Warna, ukuran, bentuk, dan atribut estetika lainnya
+
+Untuk menambahkan variabel tambahan ke dalam plot, kita dapat menggunakan estetika lain seperti warna, bentuk, dan ukuran (Catatan: meskipun kita menggunakan ejaan British sepanjang buku ini, ggplot2 juga menerima ejaan American). Ini bekerja dengan cara yang sama seperti estetika `x` dan `y`, dan ditambahkan ke dalam panggilan ke `aes()`:
+  
+- `aes(displ, hwy, colour = class)`
+- `aes(displ, hwy, shape = drv)`
+- `aes(displ, hwy, size = cyl)`
+
+ggplot2 menangani rincian dalam mengubah data (misalnya, ‘f’, ‘r’, ‘4’) menjadi estetika (misalnya, ‘merah’, ‘kuning’, ‘hijau’) dengan sebuah **skala**. Ada satu skala untuk setiap pemetaan estetika dalam sebuah plot. Skala juga bertanggung jawab untuk membuat panduan, seperti sumbu atau legenda, yang memungkinkan Anda membaca plot, mengubah nilai estetika kembali menjadi nilai data. Untuk saat ini, kita akan menggunakan skala default yang disediakan oleh ggplot2.
+
+Untuk mempelajari lebih lanjut tentang variabel luar tersebut dalam scatterplot sebelumnya, kita dapat memetakan variabel kelas ke warna:
+
+```{r}
+ggplot(mpg, aes(displ, hwy, colour = class)) + 
+  geom_point()
+```
+
+
+Ini memberikan setiap titik warna unik yang sesuai dengan kelasnya. Legenda memungkinkan kita membaca nilai data dari warnanya, menunjukkan bahwa kelompok mobil dengan konsumsi bahan bakar yang sangat tinggi untuk ukuran mesinnya adalah mobil dua tempat duduk: mobil dengan mesin besar, tetapi bodi ringan.
+
+Jika Anda ingin menetapkan suatu estetika ke nilai tetap, tanpa mengubah skalanya, lakukan itu di lapisan individual di luar `aes()`. Bandingkan dua plot berikut:
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + geom_point(aes(colour = "blue"))
+ggplot(mpg, aes(displ, hwy)) + geom_point(colour = "blue")
+```
+
+Dalam grafik pertama, nilai “biru” diubah skalanya menjadi warna agak merah muda, dan sebuah legenda ditambahkan. Dalam grafik kedua, titik-titik diberi warna biru R.Lihat `vignette("ggplot2-specs")` untuk nilai yang dibutuhkan untuk colour dan estetika lainnya.
+
+Berbagai jenis atribut estetika bekerja lebih baik dengan jenis variabel yang berbeda. Misalnya, warna dan bentuk bekerja dengan baik pada variabel kategori, sementara ukuran bekerja dengan baik untuk variabel kontinu. Jumlah data juga memengaruhi: jika data sangat banyak, bisa sulit untuk membedakan kelompok yang berbeda. Solusi alternatif adalah menggunakan faceting, seperti yang dijelaskan selanjutnya.
+
+Saat menggunakan estetika dalam sebuah grafik, biasanya lebih sedikit justru lebih baik. Sulit untuk melihat hubungan simultan antara warna, bentuk, dan ukuran, jadi bertindaklah dengan bijak saat menggunakan estetika. Alih-alih mencoba membuat satu grafik yang sangat kompleks yang menampilkan semuanya sekaligus, coba buat serangkaian grafik sederhana yang menceritakan sebuah cerita, membimbing pembaca dari ketidaktahuan menuju pengetahuan.
+
+## 1.4.1 Latihan
+
+1.Bermain-mainlah dengan estetika warna, bentuk, dan ukuran. Apa yang terjadi ketika Anda memetakannya ke nilai kontinu? Bagaimana dengan nilai kategorikal? Apa yang terjadi ketika Anda menggunakan lebih dari satu estetika dalam sebuah grafik?
+
+2.Apa yang terjadi jika Anda memetakan variabel kontinu ke bentuk? Mengapa? Apa yang terjadi jika Anda memetakan trans ke bentuk? Mengapa?
+
+3.Bagaimana hubungannya sistem penggerak dengan efisiensi bahan bakar? Bagaimana hubungannya sistem penggerak dengan ukuran dan kelas mesin?
+
+## 1.5 Pembuatan Faset
+
+Teknik lain untuk menampilkan variabel kategorikal tambahan pada plot adalah faceting. Faceting membuat tabel grafik dengan membagi data menjadi beberapa subset dan menampilkan grafik yang sama untuk setiap subset.    
+
+Ada dua jenis faceting: grid dan wrapped. Wrapped adalah yang paling berguna, jadi kita akan membahasnya di sini, dan Anda bisa mempelajari tentang grid faceting nanti. Untuk melakukan faceting pada plot, Anda cukup menambahkan spesifikasi faceting dengan `facet_wrap()`, yang mengambil nama variabel yang diawali dengan `~`.
+
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  facet_wrap(~class)
+```
+
+### 1.5.1 Latihan
+
+1.  Apa yang terjadi jika Anda mencoba melakukan facet dengan variabel kontinu seperti `hwy`? Bagaimana dengan `cyl`? Apa perbedaan utamanya?
+2.  Gunakan faceting untuk mengeksplorasi hubungan tiga arah antara efisiensi bahan bakar, ukuran mesin, dan jumlah silinder. Bagaimana faceting berdasarkan jumlah silinder mengubah penilaian Anda terhadap hubungan antara ukuran mesin dan efisiensi bahan bakar?
+3.  Baca dokumentasi untuk `facet_wrap()`. Argumen apa yang dapat Anda gunakan untuk mengontrol jumlah baris dan kolom yang muncul dalam output?
+4.  Apa gunanya `scales` argumen tersebut `facet_wrap()`? Kapan Anda bisa menggunakannya?
+
+## 1.6 Plot Geom
+
+Anda mungkin menduga bahwa dengan mengganti `geom_point()` fungsi geom yang berbeda, Anda akan mendapatkan jenis plot yang berbeda. Tebakan yang bagus! Di bagian selanjutnya, Anda akan mempelajari beberapa geom penting lainnya yang disediakan di ggplot2. Daftar ini tidak lengkap, tetapi seharusnya mencakup jenis plot yang paling umum digunakan.
+
+-   `geom_smooth()` menyesuaikan penghalus dengan data dan menampilkan penghalus dan kesalahan standarnya.
+-   `geom_boxplot()` menghasilkan diagram kotak dan kumis untuk meringkas distribusi sekumpulan titik.
+-   `geom_histogram()` dan `geom_freqpoly()` menunjukkan distribusi variabel kontinu.
+-   `geom_bar(`)menunjukkan distribusi variabel kategoris.
+-   `geom_path()` dan `geom_line()` menggambar garis di antara titik-titik data. Plot garis dibatasi untuk menghasilkan garis yang bergerak dari kiri ke kanan, sementara jalur dapat bergerak ke segala arah. Garis biasanya digunakan untuk mengeksplorasi bagaimana sesuatu berubah seiring waktu.
+
+### 1.6.1 Menambahkan Penghalus ke Plot
+
+Jika Anda memiliki diagram sebar dengan banyak noise, pola dominannya mungkin sulit terlihat. Dalam hal ini, menambahkan garis halus ke diagram dengan `geom_smooth()`:
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  geom_smooth()
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+Ini melapisi diagram sebar dengan kurva halus, termasuk penilaian ketidakpastian dalam bentuk interval keyakinan per poin yang ditampilkan dalam warna abu-abu. Jika Anda tidak tertarik dengan interval keyakinan, nonaktifkan dengan `geom_smooth(se = FALSE)`.
+
+Argumen penting untuk `geom_smooth()` adalah `method`, yang memungkinkan Anda memilih jenis model mana yang digunakan untuk menyesuaikan kurva halus:
+
+-   `method = "loess"`, nilai default untuk n kecil, menggunakan regresi lokal yang halus (seperti yang dijelaskan dalam `?loess`). Kemiringan garis dikontrol oleh `span` parameter, yang berkisar dari 0 (sangat bergelombang) hingga 1 (tidak terlalu bergelombang).
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  geom_smooth(span = 0.2)
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  geom_smooth(span = 1)
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+Loess tidak bekerja dengan baik untuk kumpulan data besar (itu O(n2) dalam memori), jadi algoritma penghalusan alternatif digunakan saat n lebih besar dari 1.000.
+
+-   `method = "gam"` Sesuai dengan model aditif umum yang disediakan oleh paket **mgcv** . Anda perlu memuat mgcv terlebih dahulu, lalu menggunakan rumus seperti `formula = y ~ s(x)` atau `y ~ s(x, bs = "cs")` (untuk data besar). Inilah yang digunakan ggplot2 ketika terdapat lebih dari 1.000 titik.
+
+```{r}
+library(mgcv)
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  geom_smooth(method = "gam", formula = y ~ s(x))
+```
+
+-   `method = "lm"` sesuai dengan model linier, memberikan garis yang paling sesuai.
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+#> `geom_smooth()` using formula = 'y ~ x'
+```
+
+-   `method = "rlm"` Berfungsi seperti `lm()`, tetapi menggunakan algoritma pemasangan yang robust sehingga outlier tidak terlalu memengaruhi hasil pemasangan. Ini adalah bagian dari paket **MASS** , jadi ingatlah untuk memuatnya terlebih dahulu.
+
+### 1.6.2 Boxplot dan Titik-Titik Yang Bergetar
+
+Ketika sekumpulan data mencakup satu variabel kategoris dan satu atau lebih variabel kontinu, Anda mungkin tertarik untuk mengetahui bagaimana nilai variabel kontinu tersebut bervariasi seiring dengan level variabel kategoris. Katakanlah kita ingin melihat bagaimana efisiensi bahan bakar bervariasi pada mobil dengan jenis drivetrain yang sama. Kita bisa mulai dengan diagram sebar seperti ini:
+
+```{r}
+ggplot(mpg, aes(drv, hwy)) + 
+  geom_point()
+```
+
+Karena hanya ada sedikit nilai unik untuk keduanya `drv` dan `hwy`, terjadi banyak overplotting. Banyak titik diplot di lokasi yang sama, sehingga distribusinya sulit dilihat. Ada tiga teknik bermanfaat yang dapat membantu mengatasi masalah ini: - Jittering, `geom_jitter()` menambahkan sedikit noise acak ke data yang dapat membantu menghindari overplotting. - Boxplot `geom_boxplot()`, meringkas bentuk distribusi dengan beberapa statistik ringkasan. - Plot biola, `geom_violin()`, menunjukkan representasi kompak dari “kepadatan” distribusi, yang menyorot area di mana lebih banyak titik ditemukan.
+
+Berikut ini diilustrasikan:
+
+```{r}
+ggplot(mpg, aes(drv, hwy)) + geom_jitter()
+ggplot(mpg, aes(drv, hwy)) + geom_boxplot()
+ggplot(mpg, aes(drv, hwy)) + geom_violin()
+```
+
+Setiap metode memiliki kelebihan dan kekurangannya masing-masing. Boxplot merangkum sebagian besar distribusi hanya dengan lima angka, sementara jittered plot menunjukkan setiap titik tetapi hanya berfungsi dengan kumpulan data yang relatif kecil. Violin plot memberikan tampilan yang paling kaya, tetapi bergantung pada perhitungan estimasi kepadatan, yang mungkin sulit diinterpretasikan.
+
+Untuk titik-titik yang bergetar, `geom_jitter()` menawarkan kontrol estetika yang sama seperti `geom_point()`: `size`, `colour`, dan `shape`. Untuk `geom_boxplot()`dan `geom_violin()`, Anda dapat mengontrol garis luar `colour` atau warna internal `fill`.
+
+### 1.6.3 Histogram dan Poligon Frekuensi
+
+Histogram dan poligon frekuensi menunjukkan distribusi satu variabel numerik. Histogram dan poligon frekuensi memberikan informasi lebih banyak tentang distribusi satu kelompok dibandingkan diagram kotak, dengan mengorbankan kebutuhan ruang yang lebih besar.
+
+```{r}
+ggplot(mpg, aes(hwy)) + geom_histogram()
+#> `stat_bin()` using `bins = 30`. Pick better value `binwidth`.
+ggplot(mpg, aes(hwy)) + geom_freqpoly()
+#> `stat_bin()` using `bins = 30`. Pick better value `binwidth`.
+```
+
+Histogram dan poligon frekuensi bekerja dengan cara yang sama: keduanya mengelompokkan data, lalu menghitung jumlah observasi dalam setiap pengelompokkan. Satu-satunya perbedaan adalah tampilannya: histogram menggunakan batang, sedangkan poligon frekuensi menggunakan garis.
+
+Anda dapat mengontrol lebar bin dengan `binwidt` hargumen (jika Anda tidak ingin bin dengan jarak yang sama, Anda dapat menggunakan `breaks` argumen). Sangat **penting** untuk bereksperimen dengan lebar bin. Pengaturan default hanya membagi data Anda menjadi 30 bin, yang kemungkinan besar bukan pilihan terbaik. Anda sebaiknya selalu mencoba berbagai lebar bin, dan Anda mungkin perlu beberapa lebar bin untuk mendapatkan gambaran lengkap tentang data Anda.
+
+```{r}
+ggplot(mpg, aes(hwy)) + 
+  geom_freqpoly(binwidth = 2.5)
+ggplot(mpg, aes(hwy)) + 
+  geom_freqpoly(binwidth = 1)
+```
+
+Alternatif untuk poligon frekuensi adalah plot kepadatan. `geom_density()` Kehati-hatian diperlukan jika Anda menggunakan plot kepadatan: dibandingkan dengan poligon frekuensi, plot kepadatan lebih sulit diinterpretasikan karena perhitungan yang mendasarinya lebih kompleks. Plot kepadatan juga menggunakan asumsi yang tidak berlaku untuk semua data, yaitu bahwa distribusi yang mendasarinya kontinu, tak terbatas, dan halus.
+
+Untuk membandingkan distribusi berbagai subgrup, Anda dapat memetakan variabel kategoris ke isian (untuk `geom_histogram()`) atau warna (untuk `geom_freqpoly()`). Membandingkan distribusi menggunakan poligon frekuensi lebih mudah karena tugas persepsi yang mendasarinya lebih mudah.Anda juga dapat menggunakan faceting: ini membuat perbandingan sedikit lebih sulit, tetapi lebih mudah untuk melihat distribusi setiap grup.
+
+```{r}
+ggplot(mpg, aes(displ, colour = drv)) + 
+  geom_freqpoly(binwidth = 0.5)
+ggplot(mpg, aes(displ, fill = drv)) + 
+  geom_histogram(binwidth = 0.5) + 
+  facet_wrap(~drv, ncol = 1)
+```
+
+
+
+### 1.6.4 Grafik Batang
+
+Analog diskrit dari histogram adalah diagram batang. geom_bar()Mudah digunakan:
+
+```{r}
+ggplot(mpg, aes(manufacturer)) + 
+  geom_bar()
+```
+
+Diagram batang bisa membingungkan karena terdapat dua plot yang agak berbeda, yang keduanya biasa disebut diagram batang. Bentuk di atas mengharuskan Anda memiliki data yang belum diringkas, dan setiap observasi berkontribusi satu unit pada tinggi setiap batang. Bentuk diagram batang yang lain digunakan untuk data yang telah diringkas sebelumnya. Misalnya, Anda mungkin memiliki tiga obat dengan efek rata-ratanya:
+
+```{r}
+drugs <- data.frame(
+  drug = c("a", "b", "c"),
+  effect = c(4.2, 9.7, 6.1)
+)
+```
+
+Untuk menampilkan data semacam ini, Anda perlu mengatur `geom_bar()`agar tidak menjalankan stat default yang mengelompokkan dan menghitung data. Namun, menurut kami, penggunaan stat ini lebih baik `geom_point()` karena titik membutuhkan ruang lebih sedikit daripada batang, dan tidak mengharuskan sumbu y memuat angka 0.
+
+```{r}
+ggplot(drugs, aes(drug, effect)) + geom_bar(stat = "identity")
+ggplot(drugs, aes(drug, effect)) + geom_point()
+```
+
+### 1.6.5 Deret Waktu Dengan PLot Garis dan Jalur
+
+Plot garis dan jalur biasanya digunakan untuk data deret waktu. Plot garis menghubungkan titik-titik dari kiri ke kanan, sementara plot jalur menghubungkannya sesuai urutan kemunculannya dalam set data (dengan kata lain, plot garis adalah plot jalur data yang diurutkan berdasarkan nilai x). Plot garis biasanya memiliki waktu pada sumbu x, yang menunjukkan bagaimana satu variabel tunggal berubah seiring waktu. Plot jalur menunjukkan bagaimana dua variabel berubah secara bersamaan seiring waktu, dengan waktu dikodekan dalam cara pengamatan dihubungkan.
+
+Karena variabel tahun dalam `mpg` kumpulan data hanya memiliki dua nilai, kami akan menampilkan beberapa plot deret waktu menggunakan `economics` kumpulan data tersebut, yang berisi data ekonomi AS yang diukur selama 40 tahun terakhir. Gambar di bawah ini menunjukkan dua plot pengangguran dari waktu ke waktu, keduanya dihasilkan menggunakan `geom_line()`. Plot pertama menunjukkan tingkat pengangguran, sementara plot kedua menunjukkan median jumlah minggu pengangguran. Kita sudah dapat melihat beberapa perbedaan pada kedua variabel ini, terutama pada puncak terakhir, di mana persentase pengangguran lebih rendah daripada puncak sebelumnya, tetapi durasi penganggurannya tinggi.
+
+```{r}
+ggplot(economics, aes(date, unemploy / pop)) +
+  geom_line()
+ggplot(economics, aes(date, uempmed)) +
+  geom_line()
+```
+
+Untuk memeriksa hubungan ini secara lebih rinci, kami ingin menggambar kedua deret waktu pada plot yang sama. Kami dapat menggambar diagram sebar tingkat pengangguran vs. lama pengangguran, tetapi dengan begitu kami tidak dapat lagi melihat perkembangannya seiring waktu. Solusinya adalah menghubungkan titik-titik yang berdekatan dalam waktu dengan segmen garis, membentuk plot *jalur* .
+
+Di bawah ini, kami memplot tingkat pengangguran vs. lama pengangguran dan menghubungkan masing-masing observasi dengan sebuah jalur. Karena banyaknya garis yang bersilangan, arah aliran waktu tidak mudah terlihat pada plot pertama. Pada plot kedua, kami mewarnai titik-titik agar lebih mudah melihat arah waktu.
+
+```{r}
+ggplot(economics, aes(unemploy / pop, uempmed)) + 
+  geom_path() +
+  geom_point()
+
+year <- function(x) as.POSIXlt(x)$year + 1900
+ggplot(economics, aes(unemploy / pop, uempmed)) + 
+  geom_path(colour = "grey50") +
+  geom_point(aes(colour = year(date)))
+```
+
+Kita dapat melihat bahwa tingkat pengangguran dan lamanya pengangguran sangat berkorelasi, tetapi dalam beberapa tahun terakhir, lamanya pengangguran telah meningkat relatif terhadap tingkat pengangguran.
+
+Dengan data longitudinal, Anda sering kali ingin menampilkan beberapa deret waktu pada setiap plot, dengan setiap deret mewakili satu individu. Untuk melakukannya, Anda perlu memetakan estetika groupke variabel yang mengodekan keanggotaan grup setiap observasi.
+
+### 1.6.6 Latihan
+
+1.  Apa masalah dengan plot yang dibuat oleh `ggplot(mpg, aes(cty, hwy)) + geom_point()`? Geom mana yang dijelaskan di atas yang paling efektif dalam mengatasi masalah tersebut?
+2.  Salah satu tantangannya `ggplot(mpg, aes(class, hwy)) + geom_boxplot()`adalah pengurutan `class` berdasarkan abjad, yang kurang bermanfaat. Bagaimana Anda bisa mengubah tingkat faktor agar lebih informatif?
+
+Daripada menyusun ulang faktor secara manual, Anda dapat melakukannya secara otomatis berdasarkan data: `ggplot(mpg, aes(reorder(class, hwy), hwy)) + geom_boxplot()`. Apa fungsinya `reorder()`? Baca dokumentasinya. 3. Jelajahi distribusi variabel karat dalam `diamonds` kumpulan data. Lebar bin berapa yang menunjukkan pola paling menarik? 4. Jelajahi distribusi variabel harga dalam `diamonds` data. Bagaimana distribusinya bervariasi berdasarkan potongan? 5. Anda sekarang mengetahui (setidaknya) tiga cara untuk membandingkan distribusi subgrup: `geom_violin()`, `geom_freqpoly()` dan estetika warna, atau `geom_histogram()` dan faceting. Apa saja kekuatan dan kelemahan masing-masing pendekatan? Pendekatan lain apa yang bisa Anda coba? 6. Baca dokumentasi untuk `geom_bar()`. Apa `weight` fungsi estetika? 7. Dengan menggunakan teknik yang telah dibahas dalam bab ini, temukan tiga cara untuk memvisualisasikan distribusi kategoris 2D. Cobalah dengan memvisualisasikan distribusi `model` dan `manufacturer`, `trans` dan `class`, dan `cyl` dan `trans`.
+
+## 1.7 Memodifikasi Sumbu
+
+Anda akan mempelajari seluruh rangkaian opsi yang tersedia di bab-bab selanjutnya, tetapi dua keluarga pembantu yang berguna memungkinkan Anda membuat modifikasi yang paling umum `xlab()` dan `ylab()` memodifikasi label sumbu x dan y:
+
+```{r}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(alpha = 1 / 3)
+
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(alpha = 1 / 3) + 
+  xlab("city driving (mpg)") + 
+  ylab("highway driving (mpg)")
+
+# Remove the axis labels with NULL
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point(alpha = 1 / 3) + 
+  xlab(NULL) + 
+  ylab(NULL)
+```
+
+`xlim()` dan `ylim()` memodifikasi batas sumbu:
+
+```{r}
+ggplot(mpg, aes(drv, hwy)) +
+  geom_jitter(width = 0.25)
+
+ggplot(mpg, aes(drv, hwy)) +
+  geom_jitter(width = 0.25) + 
+  xlim("f", "r") + 
+  ylim(20, 30)
+#> Warning: Removed 138 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
+  
+# For continuous scales, use NA to set only one limit
+ggplot(mpg, aes(drv, hwy)) +
+  geom_jitter(width = 0.25, na.rm = TRUE) + 
+  ylim(NA, 30)
+```
+
+Mengubah batas sumbu akan menetapkan nilai di luar rentang ke `NA`. Anda dapat menonaktifkan peringatan terkait dengan `na.rm = TRUE`, tetapi berhati-hatilah. Jika plot Anda menghitung statistik ringkasan (misalnya, rata-rata sampel), konversi ke ini `NA` terjadi *sebelum* statistik ringkasan dihitung, dan dapat menyebabkan hasil yang tidak diinginkan dalam beberapa situasi.
+
+## 1.8 Keluaran
+
+Sering kali Anda membuat objek plot dan langsung memplotnya, tetapi Anda juga dapat menyimpan plot ke variabel dan memanipulasinya:
+
+```{r}
+p <- ggplot(mpg, aes(displ, hwy, colour = factor(cyl))) +
+  geom_point()
+```
+
+Setelah Anda memiliki objek plot, ada beberapa hal yang dapat Anda lakukan dengannya:
+
+Render di layar dengan `print()`. Ini terjadi secara otomatis saat dijalankan secara interaktif, tetapi di dalam loop atau fungsi, Anda perlu melakukannya `print()` sendiri.
+
+```{r}
+print(p)
+```
+
+-   Simpan ke disk dengan `ggsave()`
+
+```{r}
+# Save png to disk
+ggsave("plot.png", p, width = 5, height = 5)
+```
+
+-   Jelaskan secara singkat strukturnya dengan `summary()`
+
+```{r}
+summary(p)
+#> data: manufacturer, model, displ, year, cyl, trans, drv, cty, hwy, fl,
+#>   class [234x11]
+#> mapping:  x = ~displ, y = ~hwy, colour = ~factor(cyl)
+#> faceting:  <empty> 
+#> -----------------------------------
+#> geom_point: na.rm = FALSE
+#> stat_identity: na.rm = FALSE
+#> position_identity
+```
+
+DONE.
+
+
